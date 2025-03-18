@@ -1,6 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using OrderAPI.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+string connectionString = builder.Configuration.GetConnectionString("default")!;
+builder.Services.AddDbContext<OrderDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
