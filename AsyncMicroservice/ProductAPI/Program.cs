@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using ProductAPI.Data;
 using ProductAPI.Repository;
@@ -10,6 +11,20 @@ string connectionString = builder.Configuration.GetConnectionString("default")!;
 builder.Services.AddDbContext<ProductDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
+});
+
+builder.Services.AddScoped<IProduct, ProductRepo>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, config) =>
+    {
+        config.Host("rabbitmq://localhost", c =>
+        {
+            c.Username("guest");
+            c.Password("guest");
+        });
+    });
 });
 
 builder.Services.AddScoped<IProduct, ProductRepo>();

@@ -16,7 +16,10 @@ builder.Services.AddMassTransit(x =>
             c.Username("guest");
             c.Password("guest");
         });
-        config.ReceiveEndpoint("email-webhook");
+        config.ReceiveEndpoint("email-webhook-queue", e =>
+        {
+            e.ConfigureConsumer<WebHookConsumer>(context);
+        });
     });
 });
 
