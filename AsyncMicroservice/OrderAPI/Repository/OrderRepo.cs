@@ -16,7 +16,8 @@ public class OrderRepo(OrderDbContext context, IPublishEndpoint publishEndPoint)
         OrderSummaryDto orderSummary = await GetOrderSummaryAsync();
         string content = BuildOrderEmailBody(orderSummary);
         await publishEndPoint.Publish(new EmailDto("Order Information", content));
-        return new ServiceResponseDto(true, "Order added successfully");
+        await ClearOrderTable();
+        return new ServiceResponseDto(true, "Order placed successfully");
     }
 
     public async Task<List<Order>> GetAllAsync()
@@ -50,6 +51,8 @@ public class OrderRepo(OrderDbContext context, IPublishEndpoint publishEndPoint)
 
     private async Task ClearOrderTable()
     {
-
+        Order? order = await context.Orders.FirstOrDefaultAsync();
+        context.Orders.Remove(order);
+        await context.SaveChangesAsync();
     }
 }
